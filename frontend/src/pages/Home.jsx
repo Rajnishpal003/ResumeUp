@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link , } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import ResumeList from "../components/ResumeList";
+import Navbar from "../Components/Navbar";
+import ResumeList from "../Components/ResumeList";
 import { resume as sampleResumes } from "../data/data"; // import your static resumes
 import About from "./About"
 export default function Home() {

@@ -2,12 +2,12 @@
 import React , { useState } from "react";
 import { Routes, Route, Navigate  } from "react-router-dom";
 import Home from "./pages/Home";
-import ResumeList from "./components/ResumeList";
+import ResumeList from "./Components/ResumeList";
 import AuthPage from "./pages/AuthPage";
 import Upload from "./pages/Upload";
 import "./App.css"
 import Resume from "./pages/Resume";
-import FileUploader from "./components/FileUploader";
+import FileUploader from "./Components/FileUploader";
 
 
 

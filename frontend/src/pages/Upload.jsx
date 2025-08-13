@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-import Navbar from "../components/Navbar";
-import FileUploader from "../components/FileUploader";
+import Navbar from "../Components/Navbar";
+import FileUploader from "../Components/FileUploader";
 
 // Mapping function to convert Hugging Face response to your feedback structure
 const mapHuggingFaceResponseToFeedback = (hfResponse) => {

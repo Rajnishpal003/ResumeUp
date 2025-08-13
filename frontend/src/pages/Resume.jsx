@@ -1,8 +1,8 @@
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
-import Summary from "../components/Summary";
-import ATS from "../components/ATS";
-import Details from "../components/Details";
+import Summary from "../Components/Summary";
+import ATS from "../Components/ATS";
+import Details from "../Components/Details";
 
 const Resume = () => {
   const location = useLocation();
