@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
-import Summary from "../components/sum";
+import Summary from "../components/summary";
 import ATS from "../components/ATS";
 import Details from "../components/Details";
 
