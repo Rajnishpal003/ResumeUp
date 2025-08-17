@@ -6,7 +6,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 import Navbar from "../components/Navbar";
 import FileUploader from "../components/FileUploader";
 
-// Mapping function to convert Hugging Face response to your feedback structure
+// Mapping function remains unchanged
 const mapHuggingFaceResponseToFeedback = (hfResponse) => {
   const { candidate_labels: labels, scores } = hfResponse;
 
@@ -36,13 +36,18 @@ const Upload = () => {
   const [file, setFile] = useState(null);
   const [feedback, setFeedback] = useState(null);
 
+  // Form inputs state
+  const [companyName, setCompanyName] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+
   const handleFileSelect = (selectedFile) => {
     setFile(selectedFile);
     setFeedback(null);
   };
 
-  const extractTextFromPDF = (file) => {
-    return new Promise((resolve, reject) => {
+  const extractTextFromPDF = (file) =>
+    new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
       reader.onload = async () => {
@@ -63,19 +68,22 @@ const Upload = () => {
       };
       reader.onerror = () => reject(reader.error);
     });
-  };
 
-  // Make sure you set REACT_APP_HF_API_TOKEN in your .env file for local dev
   const apiToken = import.meta.env.VITE_HF_API_TOKEN;
   if (!apiToken) {
-  console.error("API token missing! Check your .env file and restart dev server.");
-}
+    console.error("API token missing! Check your .env file and restart dev server.");
+  }
 
-  const analyzeResume = async (text) => {
+  const analyzeResume = async (text, jobTitleInput, jobDescriptionInput) => {
     setIsProcessing(true);
     setStatusText("Analyzing resume...");
 
     try {
+      const candidateLabels = [];
+      if (jobTitleInput.trim()) candidateLabels.push(jobTitleInput.trim());
+      if (jobDescriptionInput.trim()) candidateLabels.push(jobDescriptionInput.trim());
+      if (candidateLabels.length === 0) candidateLabels.push("software engineer");
+
       const response = await fetch(
         "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
         {
@@ -86,14 +94,7 @@ const Upload = () => {
           },
           body: JSON.stringify({
             inputs: text,
-            parameters: {
-              candidate_labels: [
-                "software engineer",
-                "data analyst",
-                "project manager",
-                "designer",
-              ],
-            },
+            parameters: { candidate_labels: candidateLabels },
           }),
         }
       );
@@ -105,8 +106,6 @@ const Upload = () => {
       } else if (data.labels && data.scores) {
         const mappedFeedback = mapHuggingFaceResponseToFeedback(data);
         setFeedback(mappedFeedback);
-
-        // Navigate to Resume page passing feedback via state
         navigate("/resume", { state: { feedback: mappedFeedback } });
       } else {
         setFeedback({ error: "Could not get proper analysis from API." });
@@ -128,7 +127,7 @@ const Upload = () => {
 
     try {
       const text = await extractTextFromPDF(file);
-      await analyzeResume(text);
+      await analyzeResume(text, jobTitle, jobDescription);
     } catch (err) {
       setFeedback({ error: "Error processing resume: " + err.message });
     }
@@ -143,22 +142,14 @@ const Upload = () => {
           {isProcessing ? (
             <>
               <h2>{statusText}</h2>
-              <img
-                src="/images/resume-scan.gif"
-                className="w-full"
-                alt="Processing..."
-              />
+              <img src="/images/resume-scan.gif" className="w-full" alt="Processing..." />
             </>
           ) : (
             <h2>Drop your resume for an ATS score and improvement tips</h2>
           )}
 
           {!isProcessing && (
-            <form
-              id="upload-form"
-              onSubmit={handleSubmit}
-              className="flex flex-col gap-4 mt-8"
-            >
+            <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4 mt-8">
               <div className="form-div">
                 <label htmlFor="company-name">Company Name</label>
                 <input
@@ -166,6 +157,8 @@ const Upload = () => {
                   name="company-name"
                   placeholder="Company Name"
                   id="company-name"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
                 />
               </div>
               <div className="form-div">
@@ -175,6 +168,8 @@ const Upload = () => {
                   name="job-title"
                   placeholder="Job Title"
                   id="job-title"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
                 />
               </div>
               <div className="form-div">
@@ -184,6 +179,8 @@ const Upload = () => {
                   name="job-description"
                   placeholder="Job Description"
                   id="job-description"
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
                 />
               </div>
               <div className="form-div">

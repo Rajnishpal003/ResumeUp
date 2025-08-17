@@ -27,6 +27,7 @@ const Category = ({ title, score }) => {
 
 const Summary = ({ feedback }) => {
   return (
+    <section className="summary">
     <div className="bg-white rounded-2xl shadow-md w-full">
       <div className="flex flex-row items-center p-4 gap-8">
         <ScoreGauge score={feedback.overallScore} />
@@ -44,6 +45,7 @@ const Summary = ({ feedback }) => {
       <Category title="Structure" score={feedback.structure.score} />
       <Category title="Skills" score={feedback.skills.score} />
     </div>
+     </section>
   );
 };
 
